@@ -22,17 +22,19 @@ body {
 .page-layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
 }
 
 main {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
 }
 
 .navbar {
+    position: relative;
+    z-index: 20;
     padding: 1.25rem 5vw;
     background: #fff;
     border-bottom: 1px solid var(--line);
@@ -43,7 +45,7 @@ main {
 .navbar-brand { display: flex; align-items: center; gap: .55rem; color: var(--ink); font-size: 1.3rem; font-weight: 750; letter-spacing: -.04em; text-decoration: none; }
 .brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; color: #fff; background: var(--teal); font-size: .9rem; }
 .navbar-nav {
-    position: absolute; z-index: 10; top: 72px; left: 0; display: flex; flex-direction: column; gap: 0; width: 220px; padding: .75rem 0; margin: 0; list-style: none; background: #fff; border: 1px solid var(--line); border-left: 0; border-radius: 0 0 14px 0; box-shadow: 8px 12px 25px #24313b14; transform: translateX(-105%); transition: transform .2s ease;
+    position: absolute; z-index: 30; top: 100%; left: 0; display: flex; flex-direction: column; gap: 0; width: 280px; max-height: calc(100dvh - 78px); padding: .75rem 0; margin: 0; overflow-y: auto; list-style: none; background: #fff; border: 1px solid var(--line); border-left: 0; border-radius: 0 0 14px 0; box-shadow: 8px 12px 25px #24313b14; transform: translateX(-105%); transition: transform .2s ease;
 }
 .navbar-nav.is-open { transform: translateX(0); }
 .nav-item { width: 100%; }
@@ -93,7 +95,7 @@ h1 span { color: var(--teal); }
 
 .footer-container {
     background-color: #0f1214;
-    padding: 2.5rem 0;
+    padding: 1rem 0;
     text-align: center;
     flex-shrink: 0;
 }
@@ -112,17 +114,17 @@ h1 span { color: var(--teal); }
 .footer-heading {
     display: flex;
     flex-direction: column;
-    margin: 4rem;
+    margin: 1.25rem 2.5rem;
 }
 
 .footer-heading h2 {
-    margin-bottom: 2rem;
+    margin-bottom: .75rem;
 }
 
 .footer-heading a {
     color: #fff;
     text-decoration: none;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .footer-heading a:hover {
