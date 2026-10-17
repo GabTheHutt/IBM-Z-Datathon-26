@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pydantic
+email-validator
+PyJWT
+numpy
+scikit-learn
+SQLAlchemy
