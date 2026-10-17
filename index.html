@@ -12,11 +12,16 @@
             <!-- main navigation bar on the top of the page -->
             <nav class="navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html" aria-label="Vitality home">
-                    <span class="brand-mark">V</span>
-                    <span>vitality</span>
-                </a>
-                <ul class="navbar-nav">
+                <div class="brand-navigation">
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html" aria-label="Vitality home">
+                        <span class="brand-mark">V</span>
+                        <span>vitality</span>
+                    </a>
+                </div>
+                <ul class="navbar-nav" id="site-navigation">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="index.html">Dashboard</a>
                     </li>
@@ -63,33 +68,53 @@
                             <article class="stat-card activity-card">
                                 <div class="card-title-row">
                                     <span class="card-icon activity-icon" aria-hidden="true">↗</span>
-                                    <span>Activity</span>
+                                    <span>Step Count</span>
                                 </div>
                                 <strong>6,842</strong>
                                 <span class="stat-unit">steps</span>
                                 <div class="progress-track"><span class="progress-fill activity-fill"></span></div>
                                 <p>68% of your daily goal</p>
                             </article>
-                            <article class="stat-card sleep-card">
+                                <article class="stat-card distance-card">
                                 <div class="card-title-row">
-                                    <span class="card-icon sleep-icon" aria-hidden="true">☾</span>
-                                    <span>Sleep</span>
+                                        <span class="card-icon sleep-icon" aria-hidden="true">↔</span>
+                                        <span>Distance</span>
                                 </div>
-                                <strong>7<span class="small-number">h</span> 42<span class="small-number">m</span></strong>
-                                <span class="stat-unit">last night</span>
-                                <div class="progress-track"><span class="progress-fill sleep-fill"></span></div>
-                                <p>Great recovery · 92% quality</p>
+                                    <strong>4.8</strong>
+                                    <span class="stat-unit">kilometres</span>
+                                    <div class="progress-track"><span class="progress-fill distance-fill"></span></div>
+                                    <p>80% of your daily goal</p>
                             </article>
-                            <article class="stat-card heart-card">
+                                <article class="stat-card active-card">
                                 <div class="card-title-row">
-                                    <span class="card-icon heart-icon" aria-hidden="true">♡</span>
-                                    <span>Heart rate</span>
+                                        <span class="card-icon heart-icon" aria-hidden="true">⚡</span>
+                                        <span>Very Active Minutes</span>
                                 </div>
-                                <strong>72</strong>
-                                <span class="stat-unit">bpm resting</span>
-                                <div class="heart-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-                                <p>Within your normal range</p>
+                                    <strong>34</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span class="progress-fill active-fill"></span></div>
+                                    <p>Strong pace today</p>
                             </article>
+                                <article class="stat-card light-card">
+                                    <div class="card-title-row">
+                                        <span class="card-icon activity-icon" aria-hidden="true">☀</span>
+                                        <span>Light Active Minutes</span>
+                                    </div>
+                                    <strong>86</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span class="progress-fill light-fill"></span></div>
+                                    <p>Keep moving consistently</p>
+                                </article>
+                                <article class="stat-card sedentary-card">
+                                    <div class="card-title-row">
+                                        <span class="card-icon macro-icon" aria-hidden="true">◷</span>
+                                        <span>Sedentary Minutes</span>
+                                    </div>
+                                    <strong>312</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span class="progress-fill sedentary-fill"></span></div>
+                                    <p>Try a short movement break</p>
+                                </article>
                         </div>
                     </section>
 

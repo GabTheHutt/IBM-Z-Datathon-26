@@ -6,6 +6,8 @@ const category = document.querySelector("#data-category");
 const valueLabel = document.querySelector("#value-label");
 const valueUnit = document.querySelector("#value-unit");
 const valueInput = document.querySelector("#data-value");
+const menuToggle = document.querySelector("#menu-toggle");
+const navigation = document.querySelector("#site-navigation");
 
 const categoryDetails = {
     meal: ["Calories", "kcal", "e.g. 520"],
@@ -34,4 +36,10 @@ form.addEventListener("submit", (event) => {
     dialog.close();
     form.reset();
     updateCategoryFields();
+});
+
+menuToggle.addEventListener("click", () => {
+    const isOpen = navigation.classList.toggle("is-open");
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 });
