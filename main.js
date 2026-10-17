@@ -8,6 +8,7 @@ const valueUnit = document.querySelector("#value-unit");
 const valueInput = document.querySelector("#data-value");
 const menuToggle = document.querySelector("#menu-toggle");
 const navigation = document.querySelector("#site-navigation");
+const pageLayout = document.querySelector(".page-layout");
 
 const categoryDetails = {
     meal: ["Calories", "kcal", "e.g. 520"],
@@ -40,6 +41,7 @@ form.addEventListener("submit", (event) => {
 
 menuToggle.addEventListener("click", () => {
     const isOpen = navigation.classList.toggle("is-open");
+    pageLayout.classList.toggle("sidebar-open", isOpen);
     menuToggle.setAttribute("aria-expanded", String(isOpen));
     menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 });
