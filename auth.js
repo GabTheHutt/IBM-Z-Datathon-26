@@ -1,13 +1,19 @@
-const API_BASE_URL = "http://148.100.109.227:8000/api";
-const AUTH_STORAGE_KEY = "ibm-authenticated-user";
-const ACCOUNT_STORAGE_KEY = "ibm-account";
+// Relative URL: works on whatever host/port serves the page (no hard-coded IP, no CORS, no mixed content).
+const API_BASE_URL = "/api";
+const AUTH_STORAGE_KEY = "ibm-authenticated-user"; // now holds the login token
+const ACCOUNT_STORAGE_KEY = "ibm-account";          // { firstName, email }
+
+function clearSession() {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(ACCOUNT_STORAGE_KEY);
+}
 
 function requireAuthentication() {
-    if (window.location.pathname.endsWith("index.html") || window.location.pathname.endsWith("/")) {
+    const path = window.location.pathname;
+    if (path.endsWith("index.html") || path.endsWith("/")) {
         if (!localStorage.getItem(AUTH_STORAGE_KEY)) {
             window.location.replace("login.html");
         }
-
     }
 }
 
@@ -24,47 +30,88 @@ function showFormMessage(element, message, type = "error") {
     element.className = `form-message ${type}`;
 }
 
+function errorText(data, fallback) {
+    if (data && typeof data.detail === "string") return data.detail;
+    if (data && Array.isArray(data.detail) && data.detail[0]?.msg) return data.detail[0].msg;
+    return fallback;
+}
+
+async function postJson(path, body) {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    const data = await response.json().catch(() => null);
+    return { ok: response.ok, data };
+}
+
+// On the dashboard: make sure the stored token is still valid with the server.
+async function verifySession() {
+    const token = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!token) return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.status === 401) {
+            clearSession();
+            window.location.replace("login.html");
+        }
+    } catch {
+        // server unreachable: leave the user where they are
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#login-form");
     const signupForm = document.querySelector("#signup-form");
     const forgotForm = document.querySelector("#forgot-form");
     const resetForm = document.querySelector("#reset-form");
     const logoutLink = document.querySelector("#logout-link");
+    const welcomeName = document.querySelector("#welcome-name");
 
     if (logoutLink) {
-        logoutLink.addEventListener("click", () => {
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-        });
+        logoutLink.addEventListener("click", clearSession);
     }
 
-    const welcomeName = document.querySelector("#welcome-name");
-    const account = getStoredAccount();
-    if (welcomeName && account?.firstName) {
-        welcomeName.textContent = account.firstName;
+    if (welcomeName) {
+        const account = getStoredAccount();
+        if (account?.firstName) welcomeName.textContent = account.firstName;
+        verifySession();
     }
 
     if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
+        loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const message = loginForm.querySelector(".form-message");
-            const account = getStoredAccount();
+            const button = loginForm.querySelector("button[type=submit]");
             const email = loginForm.elements.email.value.trim().toLowerCase();
             const password = loginForm.elements.password.value;
 
-            if (!account || account.email !== email || account.password !== password) {
-                showFormMessage(message, "The email or password is incorrect.");
-                return;
+            button.disabled = true;
+            try {
+                const { ok, data } = await postJson("/auth/login", { email, password });
+                if (!ok) {
+                    showFormMessage(message, errorText(data, "The email or password is incorrect."));
+                    return;
+                }
+                localStorage.setItem(AUTH_STORAGE_KEY, data.access_token);
+                localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify({ firstName: data.firstName, email }));
+                window.location.replace("index.html");
+            } catch {
+                showFormMessage(message, "Could not reach the server. Please try again.");
+            } finally {
+                button.disabled = false;
             }
-
-            localStorage.setItem(AUTH_STORAGE_KEY, account.email);
-            window.location.replace("index.html");
         });
     }
 
     if (signupForm) {
-        signupForm.addEventListener("submit", (event) => {
+        signupForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const message = signupForm.querySelector(".form-message");
+            const button = signupForm.querySelector("button[type=submit]");
             const password = signupForm.elements.password.value;
             const confirmation = signupForm.elements.passwordConfirmation.value;
 
@@ -77,15 +124,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const account = {
-                firstName: signupForm.elements.firstName.value.trim(),
-                lastName: signupForm.elements.lastName.value.trim(),
-                email: signupForm.elements.email.value.trim().toLowerCase(),
-                password,
-            };
-            localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(account));
-            showFormMessage(message, "Account created. You can now log in.", "success");
-            window.setTimeout(() => window.location.replace("login.html"), 700);
+            button.disabled = true;
+            try {
+                const { ok, data } = await postJson("/auth/signup", {
+                    firstName: signupForm.elements.firstName.value.trim(),
+                    lastName: signupForm.elements.lastName.value.trim(),
+                    email: signupForm.elements.email.value.trim().toLowerCase(),
+                    password,
+                });
+                if (!ok) {
+                    showFormMessage(message, errorText(data, "Could not create the account."));
+                    return;
+                }
+                showFormMessage(message, "Account created. You can now log in.", "success");
+                window.setTimeout(() => window.location.replace("login.html"), 700);
+            } catch {
+                showFormMessage(message, "Could not reach the server. Please try again.");
+            } finally {
+                button.disabled = false;
+            }
         });
     }
 
@@ -105,27 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resetForm.addEventListener("submit", (event) => {
             event.preventDefault();
             const message = resetForm.querySelector(".form-message");
-            const password = resetForm.elements.password.value;
-            const confirmation = resetForm.elements.passwordConfirmation.value;
-            const account = getStoredAccount();
-
-            if (password.length < 8 || password.length > 15) {
-                showFormMessage(message, "Password must be between 8 and 15 characters.");
-                return;
-            }
-            if (password !== confirmation) {
-                showFormMessage(message, "The passwords do not match.");
-                return;
-            }
-            if (!account) {
-                showFormMessage(message, "No account is available to reset.");
-                return;
-            }
-
-            account.password = password;
-            localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(account));
-            showFormMessage(message, "Password updated. You can now log in.", "success");
-            window.setTimeout(() => window.location.replace("login.html"), 700);
+            showFormMessage(message, "Password reset is not available yet because email delivery is not connected.");
         });
     }
 });

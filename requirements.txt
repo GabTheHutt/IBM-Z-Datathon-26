@@ -2,7 +2,6 @@ fastapi
 uvicorn[standard]
 pydantic
 email-validator
-passlib[bcrypt]
 PyJWT
 numpy
 scikit-learn
