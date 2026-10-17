@@ -1,10 +1,12 @@
 import os
-import socket
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 import jwt
@@ -15,13 +17,16 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
+# Base Directory Resolution
+BASE_DIR = Path(__file__).resolve().parent
+
 # Secret key for JWT signing
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ibm-linuxone-secure-secret-key-2026")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
-# Database Connection (Uses local SQLite file by default)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ibm_health.db")
+# Database Connection (SQLite)
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'ibm_health.db'}")
 
 engine = create_engine(
     DATABASE_URL, 
@@ -76,7 +81,7 @@ y_dummy = np.random.rand(100, 2)
 model = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=200, random_state=42)
 model.fit(X_dummy, y_dummy)
 
-# FastAPI App
+# Initialize Single FastAPI App Instance
 app = FastAPI(title="Fitness & Energy Tracker API")
 
 app.add_middleware(
@@ -86,6 +91,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+def print_server_url():
+    print("\n" + "=" * 50)
+    print("🚀 IBM LinuxONE Web App: http://<server-host>:8000/")
+    print("📄 API Docs: http://<server-host>:8000/docs")
+    print("=" * 50 + "\n")
 
 # Helpers
 def get_db():
@@ -107,8 +119,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Endpoints
-@app.get("/")
+# --- API ENDPOINTS ---
+
+@app.get("/api/health")
 def health_check():
     return {"status": "online", "engine": "scikit-learn on IBM LinuxONE"}
 
@@ -179,20 +192,38 @@ def predict_dashboard(data: UserInput):
         "cognitive_fatigue_index": round(fatigue_index, 1)
     }
 
-app = FastAPI(title="Fitness & Energy Tracker API")
+# --- PAGE ROUTES ---
 
-@app.on_event("startup")
-def print_server_url():
-    try:
-        # Connect to an external address to resolve the primary outbound IP
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        server_ip = s.getsockname()[0]
-        s.close()
-    except Exception:
-        server_ip = "127.0.0.1"
+@app.get("/")
+def serve_root():
+    return FileResponse(BASE_DIR / "index.html")
 
-    print("\n" + "=" * 50)
-    print(f"🚀 IBM LinuxONE Server is live at: http://{server_ip}:8000/")
-    print(f"📄 Interactive API Docs: http://{server_ip}:8000/docs")
-    print("=" * 50 + "\n")
+@app.get("/index.html")
+def serve_index():
+    return FileResponse(BASE_DIR / "index.html")
+
+@app.get("/login.html")
+def serve_login():
+    return FileResponse(BASE_DIR / "login.html")
+
+@app.get("/signup.html")
+def serve_signup():
+    return FileResponse(BASE_DIR / "signup.html")
+
+@app.get("/forgot-password.html")
+def serve_forgot_password():
+    return FileResponse(BASE_DIR / "forgot-password.html")
+
+@app.get("/reset-password.html")
+def serve_reset_password():
+    return FileResponse(BASE_DIR / "reset-password.html")
+
+# --- STATIC ASSETS MOUNT ---
+app.mount("/static", StaticFiles(directory=BASE_DIR), name="static")
+
+@app.get("/{asset_path:path}")
+def serve_frontend_asset(asset_path: str):
+    asset = BASE_DIR / asset_path
+    if asset.is_file() and asset.parent == BASE_DIR:
+        return FileResponse(asset)
+    raise HTTPException(status_code=404, detail="Not Found")
