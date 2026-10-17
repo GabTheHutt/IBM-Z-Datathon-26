@@ -6,6 +6,7 @@ function requireAuthentication() {
         if (!localStorage.getItem(AUTH_STORAGE_KEY)) {
             window.location.replace("login.html");
         }
+
     }
 }
 
@@ -35,20 +36,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const welcomeName = document.querySelector("#welcome-name");
+    const account = getStoredAccount();
+    if (welcomeName && account?.firstName) {
+        welcomeName.textContent = account.firstName;
+    }
+
     if (loginForm) {
         loginForm.addEventListener("submit", (event) => {
             event.preventDefault();
             const message = loginForm.querySelector(".form-message");
             const account = getStoredAccount();
-            const username = loginForm.elements.username.value.trim();
+            const email = loginForm.elements.email.value.trim().toLowerCase();
             const password = loginForm.elements.password.value;
 
-            if (!account || account.username !== username || account.password !== password) {
-                showFormMessage(message, "The username or password is incorrect.");
+            if (!account || account.email !== email || account.password !== password) {
+                showFormMessage(message, "The email or password is incorrect.");
                 return;
             }
 
-            localStorage.setItem(AUTH_STORAGE_KEY, account.username);
+            localStorage.setItem(AUTH_STORAGE_KEY, account.email);
             window.location.replace("index.html");
         });
     }
@@ -72,8 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const account = {
                 firstName: signupForm.elements.firstName.value.trim(),
                 lastName: signupForm.elements.lastName.value.trim(),
-                email: signupForm.elements.email.value.trim(),
-                username: signupForm.elements.username.value.trim(),
+                email: signupForm.elements.email.value.trim().toLowerCase(),
                 password,
             };
             localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(account));
