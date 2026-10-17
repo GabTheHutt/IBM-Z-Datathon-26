@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
         <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous" defer></script>
 
@@ -10,9 +11,8 @@
     </head>
     <body>
         
-        <div>
+        <div class="page-layout">
             <!-- main navigation bar on the top of the page -->
-            
             <nav class="navbar sm:navbar-expand bg-1 fg-2">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Navbar</a>
@@ -48,15 +48,34 @@
             </div>
             </nav>
 
-            <!-- main widget on the dashboard on the right handside of the page -->
-            <main>
-                
-            </main>
-        </div>
+        <!-- main widget on the dashboard on the right handside of the page -->
+        <main>
+
+            <p>This is the main content area.</p>
+        </main>
+
         <!-- footer will appear on all pages of the website, it will contain an about and contact section -->
-        <footer>
-
+        <footer class="footer-container">
+            <div class="footer">
+                <div class="footer-heading footer-1">
+                <h4>About Us</h4>
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">FAQ</a>
+                <a href="#">Cookie Policy</a>
+                </div>
+                <div class="footer-heading footer-2">
+                <h4>Contact Us</h4>
+                <a href="#">Fake@fake.com</a>
+                <a href="#">123-456-7890</a>
+                </div>
+                <div class="footer-heading footer-3">
+                <h4>Social Media</h4>
+                <a href="https://www.facebook.com/IBM/">Facebook</a>
+                <a href="https://x.com/ibmnews">X (Twitter)</a>
+                <a href="https://www.instagram.com/ibm/?hl=en">Instagram</a>
+                </div>
+            </div>
         </footer>
-
     </body>
 </html>
