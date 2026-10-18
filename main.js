@@ -139,3 +139,40 @@ menuToggle.addEventListener("click", () => {
     menuToggle.setAttribute("aria-expanded", String(isOpen));
     menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 });
+
+const API_URL = `http://${window.location.hostname || "localhost"}:5000/predict`;
+const checkButton = document.querySelector("#check-day-button");
+const checkResult = document.querySelector("#check-day-result");
+
+// Map your dashboard metrics to the model's feature names
+function getTodayData() {
+    const m = getMetrics();
+    return {
+        Steps: m.steps,
+        Total_Distance: m.distance,
+        Very_Active_Minutes: m.veryActive,
+        Lightly_Active_Minutes: m.lightActive,
+        Sedentary_Minutes: m.sedentary,
+        // Fairly_Active_Minutes isn't tracked on the dashboard yet,
+        // so the API fills in the median for it
+    };
+}
+
+async function checkDay() {
+    checkResult.textContent = "Checking...";
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(getTodayData()),
+        });
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const result = await res.json();
+        checkResult.textContent = `Today looks ${result.verdict.toLowerCase()} (score ${result.score}).`;
+    } catch (err) {
+        checkResult.textContent = "Couldn't reach the model. Is the API running and the tunnel open?";
+        console.error(err);
+    }
+}
+
+checkButton.addEventListener("click", checkDay);
