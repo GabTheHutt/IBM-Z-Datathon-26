@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://148.100.109.227:8000/api";
+const API_BASE_URL = `${window.location.origin}/api`;
 const AUTH_STORAGE_KEY = "ibm-authenticated-user";
 const ACCOUNT_STORAGE_KEY = "ibm-account";
 

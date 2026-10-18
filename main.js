@@ -1,4 +1,5 @@
 const dialog = document.querySelector("#data-dialog");
+const API_BASE_URL = `${window.location.origin}/api`;
 const openButton = document.querySelector("#open-data-dialog");
 const closeButton = document.querySelector("#close-data-dialog");
 const form = document.querySelector("#data-form");
