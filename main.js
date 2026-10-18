@@ -91,16 +91,28 @@ function renderMetrics(metrics) {
             `${formatMetric(metrics[metric])} / ${metricGoals[metric]}g`;
     });
 
-    Object.keys(metricGoals).forEach((metric) => {
-        const progressId = metric === "veryActive" ? "active-progress" : `${metric}-progress`;
-        if (metric === "steps") updateProgress("activity-progress", metrics[metric], metricGoals[metric]);
-        if (metric === "distance") updateProgress("distance-progress", metrics[metric], metricGoals[metric]);
-        if (metric === "veryActive") updateProgress("active-progress", metrics[metric], metricGoals[metric]);
-        if (metric === "lightActive") updateProgress("light-progress", metrics[metric], metricGoals[metric]);
-        if (metric === "sedentary") updateProgress("sedentary-progress", metrics[metric], metricGoals[metric]);
-        if (metric === "calories") updateProgress("calorie-progress", metrics[metric], metricGoals[metric]);
-        if (["protein", "carbs", "fat"].includes(metric)) updateProgress(progressId, metrics[metric], metricGoals[metric]);
-    });
+    // Progress bars
+    updateProgress("activity-progress", metrics.steps, metricGoals.steps);
+    updateProgress("distance-progress", metrics.distance, metricGoals.distance);
+    updateProgress("active-progress", metrics.veryActive, metricGoals.veryActive);
+    updateProgress("light-progress", metrics.lightActive, metricGoals.lightActive);
+    updateProgress("sedentary-progress", metrics.sedentary, metricGoals.sedentary);
+    updateProgress("calorie-progress", metrics.calories, metricGoals.calories);
+    updateProgress("protein-progress", metrics.protein, metricGoals.protein);
+    updateProgress("carbs-progress", metrics.carbs, metricGoals.carbs);
+    updateProgress("fat-progress", metrics.fat, metricGoals.fat);
+
+    // Percentage and remaining text
+    document.querySelector("#steps-percent").textContent =
+        Math.round((metrics.steps / metricGoals.steps) * 100);
+    document.querySelector("#distance-percent").textContent =
+        Math.round((metrics.distance / metricGoals.distance) * 100);
+
+    const caloriesLeft = metricGoals.calories - metrics.calories;
+    document.querySelector("#calories-remaining").textContent =
+        `${Math.abs(Math.round(caloriesLeft)).toLocaleString("en-GB")} kcal`;
+    document.querySelector("#calories-remaining-label").textContent =
+        caloriesLeft >= 0 ? "remaining today" : "over today's goal";
 }
 
 function updateCategoryFields() {
