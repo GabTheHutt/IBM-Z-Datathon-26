@@ -19,6 +19,15 @@ function getStoredAccount() {
     }
 }
 
+async function getApiError(response, fallbackMessage) {
+    try {
+        const data = await response.json();
+        return data.detail || fallbackMessage;
+    } catch {
+        return fallbackMessage;
+    }
+}
+
 function showFormMessage(element, message, type = "error") {
     element.textContent = message;
     element.className = `form-message ${type}`;
@@ -44,25 +53,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
+        loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const message = loginForm.querySelector(".form-message");
-            const account = getStoredAccount();
             const email = loginForm.elements.email.value.trim().toLowerCase();
             const password = loginForm.elements.password.value;
 
-            if (!account || account.email !== email || account.password !== password) {
-                showFormMessage(message, "The email or password is incorrect.");
-                return;
-            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
 
-            localStorage.setItem(AUTH_STORAGE_KEY, account.email);
-            window.location.replace("index.html");
+                if (!response.ok) {
+                    showFormMessage(
+                        message,
+                        await getApiError(response, "The email or password is incorrect."),
+                    );
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.access_token || !data.firstName) {
+                    showFormMessage(message, "The login response was invalid. Please try again.");
+                    return;
+                }
+
+                localStorage.setItem(AUTH_STORAGE_KEY, data.access_token);
+                localStorage.setItem(
+                    ACCOUNT_STORAGE_KEY,
+                    JSON.stringify({ email, firstName: data.firstName }),
+                );
+                window.location.replace("index.html");
+            } catch {
+                showFormMessage(message, "Unable to connect to the login service. Please try again.");
+            }
         });
     }
 
     if (signupForm) {
-        signupForm.addEventListener("submit", (event) => {
+        signupForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const message = signupForm.querySelector(".form-message");
             const password = signupForm.elements.password.value;
@@ -83,9 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 email: signupForm.elements.email.value.trim().toLowerCase(),
                 password,
             };
-            localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(account));
-            showFormMessage(message, "Account created. You can now log in.", "success");
-            window.setTimeout(() => window.location.replace("login.html"), 700);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(account),
+                });
+
+                if (!response.ok) {
+                    showFormMessage(
+                        message,
+                        await getApiError(response, "Unable to create your account."),
+                    );
+                    return;
+                }
+
+                showFormMessage(message, "Account created. You can now log in.", "success");
+                window.setTimeout(() => window.location.replace("login.html"), 700);
+            } catch {
+                showFormMessage(message, "Unable to connect to the signup service. Please try again.");
+            }
         });
     }
 
