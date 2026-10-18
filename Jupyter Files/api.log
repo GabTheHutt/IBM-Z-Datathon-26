@@ -1,0 +1,41 @@
+nohup: ignoring input
+/home/linux1/keras-env/lib/python3.12/site-packages/sklearn/base.py:525: InconsistentVersionWarning: Trying to unpickle estimator ExtraTreeRegressor from version 1.9.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+/home/linux1/keras-env/lib/python3.12/site-packages/sklearn/base.py:525: InconsistentVersionWarning: Trying to unpickle estimator IsolationForest from version 1.9.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://148.100.109.227:5000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [18/Oct/2026 00:54:54] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [18/Oct/2026 00:54:54] "POST /predict HTTP/1.1" 200 -
+127.0.0.1 - - [18/Oct/2026 01:02:42] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [18/Oct/2026 01:07:21] "GET /health HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:15:44] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:15:44] "POST /predict HTTP/1.1" 200 -
+44.250.150.209 - - [18/Oct/2026 01:18:48] "[33mGET / HTTP/1.1[0m" 404 -
+130.88.226.19 - - [18/Oct/2026 01:21:21] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:21:21] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:21:22] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:21:23] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:21:23] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:25:28] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:25:28] "POST /predict HTTP/1.1" 200 -
+205.210.31.5 - - [18/Oct/2026 01:26:50] "[33mGET / HTTP/1.1[0m" 404 -
+130.88.226.14 - - [18/Oct/2026 01:27:18] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.14 - - [18/Oct/2026 01:27:19] "POST /predict HTTP/1.1" 200 -
+130.88.226.0 - - [18/Oct/2026 01:30:10] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.0 - - [18/Oct/2026 01:30:10] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:44:48] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:44:48] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:17] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:17] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:29] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:29] "POST /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:39] "OPTIONS /predict HTTP/1.1" 200 -
+130.88.226.19 - - [18/Oct/2026 01:54:39] "POST /predict HTTP/1.1" 200 -
