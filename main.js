@@ -9,15 +9,99 @@ const valueInput = document.querySelector("#data-value");
 const menuToggle = document.querySelector("#menu-toggle");
 const navigation = document.querySelector("#site-navigation");
 const pageLayout = document.querySelector(".page-layout");
+const accountStorageKey = "ibm-account";
 
 const categoryDetails = {
-    meal: ["Calories", "kcal", "e.g. 520"],
-    workout: ["Duration", "minutes", "e.g. 45"],
-    steps: ["Steps", "steps", "e.g. 6800"],
-    sleep: ["Sleep duration", "hours", "e.g. 7.5"],
-    water: ["Amount", "ml", "e.g. 500"],
-    weight: ["Weight", "kg", "e.g. 72.5"],
+    steps: ["Step count", "steps", "e.g. 6800"],
+    distance: ["Distance", "km", "e.g. 2.5"],
+    veryActive: ["Very active minutes", "minutes", "e.g. 30"],
+    lightActive: ["Light active minutes", "minutes", "e.g. 45"],
+    sedentary: ["Sedentary minutes", "minutes", "e.g. 120"],
+    calories: ["Calories consumed", "kcal", "e.g. 520"],
+    protein: ["Protein", "g", "e.g. 30"],
+    carbs: ["Carbohydrates", "g", "e.g. 45"],
+    fat: ["Fat", "g", "e.g. 15"],
 };
+
+const initialMetrics = {
+    steps: 6842,
+    distance: 4.8,
+    veryActive: 34,
+    lightActive: 86,
+    sedentary: 312,
+    calories: 1486,
+    protein: 84,
+    carbs: 156,
+    fat: 42,
+};
+
+const metricGoals = {
+    steps: 10000,
+    distance: 6,
+    veryActive: 45,
+    lightActive: 135,
+    sedentary: 600,
+    calories: 2200,
+    protein: 140,
+    carbs: 220,
+    fat: 60,
+};
+
+function getMetricsStorageKey() {
+    try {
+        const account = JSON.parse(localStorage.getItem(accountStorageKey) || "null");
+        return `ibm-dashboard-metrics:${account?.email || "guest"}`;
+    } catch {
+        return "ibm-dashboard-metrics:guest";
+    }
+}
+
+function getMetrics() {
+    try {
+        return { ...initialMetrics, ...JSON.parse(localStorage.getItem(getMetricsStorageKey()) || "{}") };
+    } catch {
+        return { ...initialMetrics };
+    }
+}
+
+function formatMetric(value) {
+    return Number.isInteger(value) ? value.toLocaleString("en-GB") : value.toFixed(1);
+}
+
+function updateProgress(id, value, goal) {
+    const progress = document.querySelector(`#${id}`);
+    if (progress) progress.style.width = `${Math.min((value / goal) * 100, 100)}%`;
+}
+
+function renderMetrics(metrics) {
+    const values = {
+        "steps-value": metrics.steps,
+        "distance-value": metrics.distance,
+        "very-active-value": metrics.veryActive,
+        "light-active-value": metrics.lightActive,
+        "sedentary-value": metrics.sedentary,
+        "calories-value": metrics.calories,
+    };
+    Object.entries(values).forEach(([id, value]) => {
+        document.querySelector(`#${id}`).textContent = formatMetric(value);
+    });
+
+    ["protein", "carbs", "fat"].forEach((metric) => {
+        document.querySelector(`#${metric}-value`).textContent =
+            `${formatMetric(metrics[metric])} / ${metricGoals[metric]}g`;
+    });
+
+    Object.keys(metricGoals).forEach((metric) => {
+        const progressId = metric === "veryActive" ? "active-progress" : `${metric}-progress`;
+        if (metric === "steps") updateProgress("activity-progress", metrics[metric], metricGoals[metric]);
+        if (metric === "distance") updateProgress("distance-progress", metrics[metric], metricGoals[metric]);
+        if (metric === "veryActive") updateProgress("active-progress", metrics[metric], metricGoals[metric]);
+        if (metric === "lightActive") updateProgress("light-progress", metrics[metric], metricGoals[metric]);
+        if (metric === "sedentary") updateProgress("sedentary-progress", metrics[metric], metricGoals[metric]);
+        if (metric === "calories") updateProgress("calorie-progress", metrics[metric], metricGoals[metric]);
+        if (["protein", "carbs", "fat"].includes(metric)) updateProgress(progressId, metrics[metric], metricGoals[metric]);
+    });
+}
 
 function updateCategoryFields() {
     const details = categoryDetails[category.value];
@@ -34,10 +118,20 @@ dialog.addEventListener("click", (event) => {
 category.addEventListener("change", updateCategoryFields);
 form.addEventListener("submit", (event) => {
     event.preventDefault();
+    const metric = category.value;
+    const value = Number(valueInput.value);
+    if (!Number.isFinite(value) || value < 0) return;
+
+    const metrics = getMetrics();
+    metrics[metric] += value;
+    localStorage.setItem(getMetricsStorageKey(), JSON.stringify(metrics));
+    renderMetrics(metrics);
     dialog.close();
     form.reset();
     updateCategoryFields();
 });
+
+renderMetrics(getMetrics());
 
 menuToggle.addEventListener("click", () => {
     const isOpen = navigation.classList.toggle("is-open");

@@ -67,54 +67,54 @@
                             <a class="section-link" href="#">View details <span aria-hidden="true">↗</span></a>
                         </div>
                         <div class="fitness-grid">
-                            <article class="stat-card activity-card">
+                            <article class="stat-card activity-card" data-metric-card="steps">
                                 <div class="card-title-row">
                                     <span class="card-icon activity-icon" aria-hidden="true">↗</span>
                                     <span>Step Count</span>
                                 </div>
-                                <strong>6,842</strong>
+                                <strong id="steps-value">6,842</strong>
                                 <span class="stat-unit">steps</span>
-                                <div class="progress-track"><span class="progress-fill activity-fill"></span></div>
+                                <div class="progress-track"><span id="activity-progress" class="progress-fill activity-fill"></span></div>
                                 <p>68% of your daily goal</p>
                             </article>
-                                <article class="stat-card distance-card">
+                                <article class="stat-card distance-card" data-metric-card="distance">
                                 <div class="card-title-row">
                                         <span class="card-icon sleep-icon" aria-hidden="true">↔</span>
                                         <span>Distance</span>
                                 </div>
-                                    <strong>4.8</strong>
+                                    <strong id="distance-value">4.8</strong>
                                     <span class="stat-unit">kilometres</span>
-                                    <div class="progress-track"><span class="progress-fill distance-fill"></span></div>
+                                    <div class="progress-track"><span id="distance-progress" class="progress-fill distance-fill"></span></div>
                                     <p>80% of your daily goal</p>
                             </article>
-                                <article class="stat-card active-card">
+                                <article class="stat-card active-card" data-metric-card="veryActive">
                                 <div class="card-title-row">
                                         <span class="card-icon heart-icon" aria-hidden="true">⚡</span>
                                         <span>Very Active Minutes</span>
                                 </div>
-                                    <strong>34</strong>
+                                    <strong id="very-active-value">34</strong>
                                     <span class="stat-unit">minutes</span>
-                                    <div class="progress-track"><span class="progress-fill active-fill"></span></div>
+                                    <div class="progress-track"><span id="active-progress" class="progress-fill active-fill"></span></div>
                                     <p>Strong pace today</p>
                             </article>
-                                <article class="stat-card light-card">
+                                <article class="stat-card light-card" data-metric-card="lightActive">
                                     <div class="card-title-row">
                                         <span class="card-icon activity-icon" aria-hidden="true">☀</span>
                                         <span>Light Active Minutes</span>
                                     </div>
-                                    <strong>86</strong>
+                                    <strong id="light-active-value">86</strong>
                                     <span class="stat-unit">minutes</span>
-                                    <div class="progress-track"><span class="progress-fill light-fill"></span></div>
+                                    <div class="progress-track"><span id="light-progress" class="progress-fill light-fill"></span></div>
                                     <p>Keep moving consistently</p>
                                 </article>
-                                <article class="stat-card sedentary-card">
+                                <article class="stat-card sedentary-card" data-metric-card="sedentary">
                                     <div class="card-title-row">
                                         <span class="card-icon macro-icon" aria-hidden="true">◷</span>
                                         <span>Sedentary Minutes</span>
                                     </div>
-                                    <strong>312</strong>
+                                    <strong id="sedentary-value">312</strong>
                                     <span class="stat-unit">minutes</span>
-                                    <div class="progress-track"><span class="progress-fill sedentary-fill"></span></div>
+                                    <div class="progress-track"><span id="sedentary-progress" class="progress-fill sedentary-fill"></span></div>
                                     <p>Try a short movement break</p>
                                 </article>
                         </div>
@@ -129,17 +129,17 @@
                             <a class="section-link" href="#">Food journal <span aria-hidden="true">↗</span></a>
                         </div>
                         <div class="nutrition-grid">
-                            <article class="calorie-card">
+                            <article class="calorie-card" data-metric-card="calories">
                                 <div class="card-title-row"><span class="card-icon flame-icon" aria-hidden="true">♨</span><span>Calories</span></div>
-                                <div class="calorie-number"><strong>1,486</strong><span>/ 2,200 kcal</span></div>
-                                <div class="progress-track calorie-track"><span class="progress-fill calorie-fill"></span></div>
+                                <div class="calorie-number"><strong id="calories-value">1,486</strong><span>/ 2,200 kcal</span></div>
+                                <div class="progress-track calorie-track"><span id="calorie-progress" class="progress-fill calorie-fill"></span></div>
                                 <p><strong>714 kcal</strong> remaining today</p>
                             </article>
-                            <article class="macro-card">
+                            <article class="macro-card" data-metric-card="macros">
                                 <div class="card-title-row"><span class="card-icon macro-icon" aria-hidden="true">◒</span><span>Macros</span><span class="macro-caption">Daily total</span></div>
-                                <div class="macro-row"><span class="macro-label protein-label">Protein</span><span>84 / 140g</span><div class="progress-track"><span class="progress-fill protein-fill"></span></div></div>
-                                <div class="macro-row"><span class="macro-label carbs-label">Carbs</span><span>156 / 220g</span><div class="progress-track"><span class="progress-fill carbs-fill"></span></div></div>
-                                <div class="macro-row"><span class="macro-label fat-label">Fat</span><span>42 / 60g</span><div class="progress-track"><span class="progress-fill fat-fill"></span></div></div>
+                                <div class="macro-row"><span class="macro-label protein-label">Protein</span><span id="protein-value">84 / 140g</span><div class="progress-track"><span id="protein-progress" class="progress-fill protein-fill"></span></div></div>
+                                <div class="macro-row"><span class="macro-label carbs-label">Carbs</span><span id="carbs-value">156 / 220g</span><div class="progress-track"><span id="carbs-progress" class="progress-fill carbs-fill"></span></div></div>
+                                <div class="macro-row"><span class="macro-label fat-label">Fat</span><span id="fat-value">42 / 60g</span><div class="progress-track"><span id="fat-progress" class="progress-fill fat-fill"></span></div></div>
                             </article>
                         </div>
                     </section>
@@ -154,12 +154,15 @@
                 <form id="data-form">
                     <label for="data-category">What would you like to add?</label>
                     <select id="data-category" name="category">
-                        <option value="meal">Meal or food</option>
-                        <option value="workout">Workout</option>
-                        <option value="steps">Steps</option>
-                        <option value="sleep">Sleep</option>
-                        <option value="water">Water</option>
-                        <option value="weight">Weight</option>
+                        <option value="steps">Step count</option>
+                        <option value="distance">Distance</option>
+                        <option value="veryActive">Very active minutes</option>
+                        <option value="lightActive">Light active minutes</option>
+                        <option value="sedentary">Sedentary minutes</option>
+                        <option value="calories">Calories consumed</option>
+                        <option value="protein">Protein</option>
+                        <option value="carbs">Carbohydrates</option>
+                        <option value="fat">Fat</option>
                     </select>
                     <label for="data-value" id="value-label">Calories</label>
                     <div class="input-with-unit"><input id="data-value" name="value" type="number" min="0" step="any" placeholder="e.g. 520" required><span id="value-unit">kcal</span></div>
