@@ -180,6 +180,25 @@ def metrics_response(metrics: DashboardMetricsDB) -> DashboardMetrics:
         fat=metrics.fat,
     )
 
+def reset_metrics_if_new_day(metrics: DashboardMetricsDB) -> None:
+    today = datetime.now(timezone.utc).date()
+    if metrics.updated_at is not None and metrics.updated_at.date() == today:
+        return
+
+    for field in (
+        "steps",
+        "distance",
+        "very_active",
+        "light_active",
+        "sedentary",
+        "calories",
+        "protein",
+        "carbs",
+        "fat",
+    ):
+        setattr(metrics, field, 0)
+    metrics.updated_at = datetime.now(timezone.utc)
+
 # --- API ENDPOINTS ---
 
 @app.get("/api/health")
@@ -235,6 +254,10 @@ def get_dashboard_metrics(user: UserDB = Depends(get_current_user), db: Session 
         db.add(metrics)
         db.commit()
         db.refresh(metrics)
+    else:
+        reset_metrics_if_new_day(metrics)
+        db.commit()
+        db.refresh(metrics)
     return metrics_response(metrics)
 
 @app.patch("/api/dashboard/metrics", response_model=DashboardMetrics)
@@ -263,6 +286,8 @@ def update_dashboard_metric(
         metrics = DashboardMetricsDB(user_id=user.id)
         db.add(metrics)
         db.flush()
+    else:
+        reset_metrics_if_new_day(metrics)
     setattr(metrics, column.name, getattr(metrics, column.name) + update.amount)
     db.commit()
     db.refresh(metrics)
