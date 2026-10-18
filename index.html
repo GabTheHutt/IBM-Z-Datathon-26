@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <script src="auth.js"></script>
+        <script>requireAuthentication();</script>
+        <title>Inter Body Manager (IBM) Dashboard</title>
+    </head>
+    <body>
+        
+        <div class="page-layout">
+            <!-- main navigation bar on the top of the page -->
+            <nav class="navbar">
+            <div class="container-fluid">
+                <div class="brand-navigation">
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html" aria-label="Inter Body Manager home">
+                        <span class="brand-mark">IBM</span>
+                        <span>Inter Body Manager</span>
+                    </a>
+                </div>
+                <ul class="navbar-nav" id="site-navigation">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Journal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="logout-link" href="login.html">Logout</a>
+                    </li>
+                </ul>
+            </div>
+            </nav>
+
+        <main>
+            <section class="dashboard-shell" aria-labelledby="welcome-heading">
+                <header class="welcome-bar">
+                    <div>
+                        <p class="eyebrow">Saturday, 17 October 2026</p>
+                        <h1 id="welcome-heading">Welcome back, <span id="welcome-name">there</span></h1>
+                        <p class="welcome-copy">Small steps today, stronger you tomorrow.</p>
+                    </div>
+                    <button class="add-data-button" id="open-data-dialog" type="button">
+                        <span class="plus-icon" aria-hidden="true">+</span>
+                        <span>Add data</span>
+                    </button>
+                </header>
+
+                <div class="dashboard-sections">
+                    <section class="dashboard-section fitness-section" aria-labelledby="fitness-heading">
+                        <div class="section-heading">
+                            <div>
+                                <p class="section-kicker">Move well</p>
+                                <h2 id="fitness-heading">Fitness</h2>
+                            </div>
+                            <a class="section-link" href="#">View details <span aria-hidden="true">↗</span></a>
+                        </div>
+                        <div class="fitness-grid">
+                            <article class="stat-card activity-card" data-metric-card="steps">
+                                <div class="card-title-row">
+                                    <span class="card-icon activity-icon" aria-hidden="true">↗</span>
+                                    <span>Step Count</span>
+                                </div>
+                                <strong id="steps-value">6,842</strong>
+                                <span class="stat-unit">steps</span>
+                                <div class="progress-track"><span id="activity-progress" class="progress-fill activity-fill"></span></div>
+                                <p>68% of your daily goal</p>
+                            </article>
+                                <article class="stat-card distance-card" data-metric-card="distance">
+                                <div class="card-title-row">
+                                        <span class="card-icon sleep-icon" aria-hidden="true">↔</span>
+                                        <span>Distance</span>
+                                </div>
+                                    <strong id="distance-value">4.8</strong>
+                                    <span class="stat-unit">kilometres</span>
+                                    <div class="progress-track"><span id="distance-progress" class="progress-fill distance-fill"></span></div>
+                                    <p>80% of your daily goal</p>
+                            </article>
+                                <article class="stat-card active-card" data-metric-card="veryActive">
+                                <div class="card-title-row">
+                                        <span class="card-icon heart-icon" aria-hidden="true">⚡</span>
+                                        <span>Very Active Minutes</span>
+                                </div>
+                                    <strong id="very-active-value">34</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span id="active-progress" class="progress-fill active-fill"></span></div>
+                                    <p>Strong pace today</p>
+                            </article>
+                                <article class="stat-card light-card" data-metric-card="lightActive">
+                                    <div class="card-title-row">
+                                        <span class="card-icon activity-icon" aria-hidden="true">☀</span>
+                                        <span>Light Active Minutes</span>
+                                    </div>
+                                    <strong id="light-active-value">86</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span id="light-progress" class="progress-fill light-fill"></span></div>
+                                    <p>Keep moving consistently</p>
+                                </article>
+                                <article class="stat-card sedentary-card" data-metric-card="sedentary">
+                                    <div class="card-title-row">
+                                        <span class="card-icon macro-icon" aria-hidden="true">◷</span>
+                                        <span>Sedentary Minutes</span>
+                                    </div>
+                                    <strong id="sedentary-value">312</strong>
+                                    <span class="stat-unit">minutes</span>
+                                    <div class="progress-track"><span id="sedentary-progress" class="progress-fill sedentary-fill"></span></div>
+                                    <p>Try a short movement break</p>
+                                </article>
+                        </div>
+                        <div class="check-day">
+    <button class="add-data-button" id="check-day-button" type="button">
+        <span class="plus-icon" aria-hidden="true">✓</span>
+        <span>Check my day</span>
+    </button>
+    <p class="check-result" id="check-day-result" aria-live="polite"></p>
+    <div class="check-explain" id="check-day-explain" aria-live="polite"></div>
+</div>
+                    </section>
+
+                    <section class="dashboard-section nutrition-section" aria-labelledby="nutrition-heading">
+                        <div class="section-heading">
+                            <div>
+                                <p class="section-kicker">Fuel your day</p>
+                                <h2 id="nutrition-heading">Nutrition</h2>
+                            </div>
+                            <a class="section-link" href="#">Food journal <span aria-hidden="true">↗</span></a>
+                        </div>
+                        <div class="nutrition-grid">
+                            <article class="calorie-card" data-metric-card="calories">
+                                <div class="card-title-row"><span class="card-icon flame-icon" aria-hidden="true">♨</span><span>Calories</span></div>
+                                <div class="calorie-number"><strong id="calories-value">1,486</strong><span>/ 2,200 kcal</span></div>
+                                <div class="progress-track calorie-track"><span id="calorie-progress" class="progress-fill calorie-fill"></span></div>
+                                <p><strong>714 kcal</strong> remaining today</p>
+                            </article>
+                            <article class="macro-card" data-metric-card="macros">
+                                <div class="card-title-row"><span class="card-icon macro-icon" aria-hidden="true">◒</span><span>Macros</span><span class="macro-caption">Daily total</span></div>
+                                <div class="macro-row"><span class="macro-label protein-label">Protein</span><span id="protein-value">84 / 140g</span><div class="progress-track"><span id="protein-progress" class="progress-fill protein-fill"></span></div></div>
+                                <div class="macro-row"><span class="macro-label carbs-label">Carbs</span><span id="carbs-value">156 / 220g</span><div class="progress-track"><span id="carbs-progress" class="progress-fill carbs-fill"></span></div></div>
+                                <div class="macro-row"><span class="macro-label fat-label">Fat</span><span id="fat-value">42 / 60g</span><div class="progress-track"><span id="fat-progress" class="progress-fill fat-fill"></span></div></div>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <dialog class="data-dialog" id="data-dialog" aria-labelledby="dialog-title">
+                <div class="dialog-header">
+                    <div><p class="section-kicker">Keep your streak going</p><h2 id="dialog-title">Add data</h2></div>
+                    <button class="dialog-close" id="close-data-dialog" type="button" aria-label="Close dialog">×</button>
+                </div>
+                <form id="data-form">
+                    <label for="data-category">What would you like to add?</label>
+                    <select id="data-category" name="category">
+                        <option value="steps">Step count</option>
+                        <option value="distance">Distance</option>
+                        <option value="veryActive">Very active minutes</option>
+                        <option value="lightActive">Light active minutes</option>
+                        <option value="sedentary">Sedentary minutes</option>
+                        <option value="calories">Calories consumed</option>
+                        <option value="protein">Protein</option>
+                        <option value="carbs">Carbohydrates</option>
+                        <option value="fat">Fat</option>
+                    </select>
+                    <label for="data-value" id="value-label">Calories</label>
+                    <div class="input-with-unit"><input id="data-value" name="value" type="number" min="0" step="any" placeholder="e.g. 520" required><span id="value-unit">kcal</span></div>
+                    <label for="data-note">Note <span>(optional)</span></label>
+                    <input id="data-note" name="note" type="text" placeholder="Add a little context">
+                    <button class="save-button" type="submit">Save entry</button>
+                </form>
+            </dialog>
+        </main>
+
+        <!-- footer will appear on all pages of the website, it will contain an about and contact section -->
+        <footer class="footer-container">
+            <div class="footer">
+                <div class="footer-heading footer-1">
+                <h4>About Us</h4>
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">FAQ</a>
+                <a href="#">Cookie Policy</a>
+                </div>
+                <div class="footer-heading footer-2">
+                <h4>Contact Us</h4>
+                <a href="#">Fake@fake.com</a>
+                <a href="#">123-456-7890</a>
+                </div>
+                <div class="footer-heading footer-3">
+                <h4>Social Media</h4>
+                <a href="https://www.facebook.com/IBM/">Facebook</a>
+                <a href="https://x.com/ibmnews">X (Twitter)</a>
+                <a href="https://www.instagram.com/ibm/?hl=en">Instagram</a>
+                </div>
+            </div>
+        </footer>
+    </body>
+    <script src="main.js"></script>
+</html>

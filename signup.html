@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="auth.js" defer></script>
+    <title>Sign up | Inter Body Manager</title>
+</head>
+<body class="auth-page">
+    <main class="auth-layout auth-layout-centered">
+        <section class="auth-card">
+            <a class="auth-brand auth-brand-dark" href="login.html"><span class="brand-mark">IBM</span><span>Inter Body Manager</span></a>
+            <p class="section-kicker">Get started</p><h2>Create your IBM account</h2><p class="auth-subtitle">Set up your profile to begin tracking your health.</p>
+            <form id="signup-form" class="auth-form">
+                <div class="form-two-columns"><div><label for="first-name">First name</label><input id="first-name" name="firstName" type="text" required></div><div><label for="last-name">Last name</label><input id="last-name" name="lastName" type="text" required></div></div>
+                <label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required>
+                <label for="signup-password">Password <span>(8–15 characters)</span></label><input id="signup-password" name="password" type="password" minlength="8" maxlength="15" autocomplete="new-password" required>
+                <label for="password-confirmation">Confirm password</label><input id="password-confirmation" name="passwordConfirmation" type="password" minlength="8" maxlength="15" autocomplete="new-password" required>
+                <button class="save-button" type="submit">Create account</button><p class="form-message" role="status"></p>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+        </section>
+    </main>
+</body>
+</html>
