@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -13,7 +14,7 @@ import jwt
 import numpy as np
 from sklearn.neural_network import MLPRegressor
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -36,6 +37,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+bearer_scheme = HTTPBearer()
 
 # Database User Model
 class UserDB(Base):
@@ -47,6 +49,22 @@ class UserDB(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class DashboardMetricsDB(Base):
+    __tablename__ = "dashboard_metrics"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False, index=True)
+    steps = Column(Float, nullable=False, default=0)
+    distance = Column(Float, nullable=False, default=0)
+    very_active = Column(Float, nullable=False, default=0)
+    light_active = Column(Float, nullable=False, default=0)
+    sedentary = Column(Float, nullable=False, default=0)
+    calories = Column(Float, nullable=False, default=0)
+    protein = Column(Float, nullable=False, default=0)
+    carbs = Column(Float, nullable=False, default=0)
+    fat = Column(Float, nullable=False, default=0)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 Base.metadata.create_all(bind=engine)
 
@@ -65,6 +83,21 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str
     firstName: str
+
+class DashboardMetrics(BaseModel):
+    steps: float
+    distance: float
+    veryActive: float
+    lightActive: float
+    sedentary: float
+    calories: float
+    protein: float
+    carbs: float
+    fat: float
+
+class MetricUpdate(BaseModel):
+    metric: str
+    amount: float = Field(gt=0)
 
 class UserInput(BaseModel):
     calories_logged: float
@@ -119,6 +152,34 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> UserDB:
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload["id"])
+    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired login.")
+
+    user = db.query(UserDB).filter(UserDB.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User account was not found.")
+    return user
+
+def metrics_response(metrics: DashboardMetricsDB) -> DashboardMetrics:
+    return DashboardMetrics(
+        steps=metrics.steps,
+        distance=metrics.distance,
+        veryActive=metrics.very_active,
+        lightActive=metrics.light_active,
+        sedentary=metrics.sedentary,
+        calories=metrics.calories,
+        protein=metrics.protein,
+        carbs=metrics.carbs,
+        fat=metrics.fat,
+    )
+
 # --- API ENDPOINTS ---
 
 @app.get("/api/health")
@@ -142,8 +203,9 @@ def signup(user: UserSignup, db: Session = Depends(get_db)):
         hashed_password=hashed_pw
     )
     db.add(new_user)
+    db.flush()
+    db.add(DashboardMetricsDB(user_id=new_user.id))
     db.commit()
-    db.refresh(new_user)
     return {"message": "User registered successfully"}
 
 @app.post("/api/auth/login", response_model=TokenResponse)
@@ -164,6 +226,47 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
         "token_type": "bearer",
         "firstName": user.first_name
     }
+
+@app.get("/api/dashboard/metrics", response_model=DashboardMetrics)
+def get_dashboard_metrics(user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    metrics = db.query(DashboardMetricsDB).filter(DashboardMetricsDB.user_id == user.id).first()
+    if not metrics:
+        metrics = DashboardMetricsDB(user_id=user.id)
+        db.add(metrics)
+        db.commit()
+        db.refresh(metrics)
+    return metrics_response(metrics)
+
+@app.patch("/api/dashboard/metrics", response_model=DashboardMetrics)
+def update_dashboard_metric(
+    update: MetricUpdate,
+    user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    metric_columns = {
+        "steps": DashboardMetricsDB.steps,
+        "distance": DashboardMetricsDB.distance,
+        "veryActive": DashboardMetricsDB.very_active,
+        "lightActive": DashboardMetricsDB.light_active,
+        "sedentary": DashboardMetricsDB.sedentary,
+        "calories": DashboardMetricsDB.calories,
+        "protein": DashboardMetricsDB.protein,
+        "carbs": DashboardMetricsDB.carbs,
+        "fat": DashboardMetricsDB.fat,
+    }
+    column = metric_columns.get(update.metric)
+    if column is None:
+        raise HTTPException(status_code=400, detail="Unsupported dashboard metric.")
+
+    metrics = db.query(DashboardMetricsDB).filter(DashboardMetricsDB.user_id == user.id).first()
+    if not metrics:
+        metrics = DashboardMetricsDB(user_id=user.id)
+        db.add(metrics)
+        db.flush()
+    setattr(metrics, column.name, getattr(metrics, column.name) + update.amount)
+    db.commit()
+    db.refresh(metrics)
+    return metrics_response(metrics)
 
 @app.post("/api/predict-dashboard")
 def predict_dashboard(data: UserInput):

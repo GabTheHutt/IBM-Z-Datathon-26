@@ -9,7 +9,7 @@ const valueInput = document.querySelector("#data-value");
 const menuToggle = document.querySelector("#menu-toggle");
 const navigation = document.querySelector("#site-navigation");
 const pageLayout = document.querySelector(".page-layout");
-const accountStorageKey = "ibm-account";
+const dataMessage = document.querySelector("#data-message");
 
 const categoryDetails = {
     steps: ["Step count", "steps", "e.g. 6800"],
@@ -23,17 +23,7 @@ const categoryDetails = {
     fat: ["Fat", "g", "e.g. 15"],
 };
 
-const initialMetrics = {
-    steps: 6842,
-    distance: 4.8,
-    veryActive: 34,
-    lightActive: 86,
-    sedentary: 312,
-    calories: 1486,
-    protein: 84,
-    carbs: 156,
-    fat: 42,
-};
+let currentMetrics = null;
 
 const metricGoals = {
     steps: 10000,
@@ -47,21 +37,18 @@ const metricGoals = {
     fat: 60,
 };
 
-function getMetricsStorageKey() {
-    try {
-        const account = JSON.parse(localStorage.getItem(accountStorageKey) || "null");
-        return `ibm-dashboard-metrics:${account?.email || "guest"}`;
-    } catch {
-        return "ibm-dashboard-metrics:guest";
-    }
-}
-
 function getMetrics() {
-    try {
-        return { ...initialMetrics, ...JSON.parse(localStorage.getItem(getMetricsStorageKey()) || "{}") };
-    } catch {
-        return { ...initialMetrics };
-    }
+    return currentMetrics || {
+        steps: 0,
+        distance: 0,
+        veryActive: 0,
+        lightActive: 0,
+        sedentary: 0,
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+    };
 }
 
 function formatMetric(value) {
@@ -103,6 +90,29 @@ function renderMetrics(metrics) {
     });
 }
 
+function getAuthHeaders() {
+    const token = localStorage.getItem("ibm-authenticated-user");
+    return token
+        ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+        : { "Content-Type": "application/json" };
+}
+
+async function loadMetrics() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard/metrics`, {
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error("Unable to load dashboard data.");
+        currentMetrics = await response.json();
+        renderMetrics(currentMetrics);
+    } catch {
+        if (dataMessage) {
+            dataMessage.textContent = "Unable to load your dashboard data. Please log in again.";
+            dataMessage.className = "form-message error";
+        }
+    }
+}
+
 function updateCategoryFields() {
     const details = categoryDetails[category.value];
     valueLabel.textContent = details[0];
@@ -116,22 +126,39 @@ dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
 });
 category.addEventListener("change", updateCategoryFields);
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const metric = category.value;
     const value = Number(valueInput.value);
-    if (!Number.isFinite(value) || value < 0) return;
+    if (!Number.isFinite(value) || value <= 0) {
+        if (dataMessage) {
+            dataMessage.textContent = "Enter an amount greater than zero.";
+            dataMessage.className = "form-message error";
+        }
+        return;
+    }
 
-    const metrics = getMetrics();
-    metrics[metric] += value;
-    localStorage.setItem(getMetricsStorageKey(), JSON.stringify(metrics));
-    renderMetrics(metrics);
-    dialog.close();
-    form.reset();
-    updateCategoryFields();
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard/metrics`, {
+            method: "PATCH",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ metric, amount: value }),
+        });
+        if (!response.ok) throw new Error("Unable to save dashboard data.");
+        currentMetrics = await response.json();
+        renderMetrics(currentMetrics);
+        dialog.close();
+        form.reset();
+        updateCategoryFields();
+    } catch {
+        if (dataMessage) {
+            dataMessage.textContent = "Unable to save your data. Please try again.";
+            dataMessage.className = "form-message error";
+        }
+    }
 });
 
-renderMetrics(getMetrics());
+loadMetrics();
 
 menuToggle.addEventListener("click", () => {
     const isOpen = navigation.classList.toggle("is-open");
