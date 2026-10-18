@@ -85,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     ACCOUNT_STORAGE_KEY,
                     JSON.stringify({ email, firstName: data.firstName }),
                 );
-                window.location.replace("index.html");
+                showFormMessage(message, "Login successful. Redirecting to your dashboard...", "success");
+                window.setTimeout(() => window.location.replace("index.html"), 500);
             } catch {
                 showFormMessage(message, "Unable to connect to the login service. Please try again.");
             }

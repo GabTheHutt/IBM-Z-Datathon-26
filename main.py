@@ -7,7 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from passlib.context import CryptContext
 import jwt
 import numpy as np
@@ -55,7 +55,7 @@ class UserSignup(BaseModel):
     firstName: str
     lastName: str
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8, max_length=15)
 
 class UserLogin(BaseModel):
     email: EmailStr
