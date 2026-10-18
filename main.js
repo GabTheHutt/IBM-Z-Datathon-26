@@ -159,6 +159,7 @@ function getTodayData() {
 }
 
 async function checkDay() {
+    checkResult.className = "check-result";
     checkResult.textContent = "Checking...";
     try {
         const res = await fetch(API_URL, {
@@ -168,8 +169,13 @@ async function checkDay() {
         });
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const result = await res.json();
-        checkResult.textContent = `Today looks ${result.verdict.toLowerCase()} (score ${result.score}).`;
+        const isNormal = result.verdict === "Normal";
+        checkResult.className = `check-result ${isNormal ? "is-normal" : "is-unusual"}`;
+        checkResult.textContent = isNormal
+            ? `Today looks normal (score ${result.score})`
+            : `Today looks unusual (score ${result.score})`;
     } catch (err) {
+        checkResult.className = "check-result is-error";
         checkResult.textContent = "Couldn't reach the model. Is the API running and the tunnel open?";
         console.error(err);
     }
