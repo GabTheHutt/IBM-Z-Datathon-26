@@ -318,6 +318,11 @@ h1 span { color: var(--teal); }
 .check-result.is-normal { color: #2f8068; background: #d8eee7; border-color: #bfe2d6; }
 .check-result.is-unusual { color: #bc7840; background: #fbe6d2; border-color: #f2d2b3; }
 .check-result.is-error { color: #b44d4d; background: #f8e1de; border-color: #efc7c2; }
+.check-explain { flex-basis: 100%; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--muted); font-size: .78rem; line-height: 1.55; }
+.check-explain:empty { display: none; }
+.check-explain p { margin: 0 0 .55rem; }
+.check-explain p:last-child { margin-bottom: 0; }
+.check-explain strong { color: var(--ink); }
 
 @media (max-width: 720px) {
     .page-layout.sidebar-open { width: calc(100% - 230px); margin-left: 230px; }

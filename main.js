@@ -158,9 +158,52 @@ function getTodayData() {
     };
 }
 
+const checkExplain = document.querySelector("#check-day-explain");
+
+const featureNames = {
+    Steps: "steps",
+    Total_Distance: "distance",
+    Very_Active_Minutes: "very active minutes",
+    Fairly_Active_Minutes: "fairly active minutes",
+    Lightly_Active_Minutes: "light active minutes",
+    Sedentary_Minutes: "sedentary minutes",
+};
+
+function explainResult(result) {
+    const score = result.score;
+    const paragraphs = [];
+
+    if (score > 0.1) {
+        paragraphs.push(["Very typical day. ", "Your numbers closely match the pattern of the days the model learned from."]);
+    } else if (score > 0) {
+        paragraphs.push(["Within your normal range, but near the edge. ", "Your day fits the usual pattern, though it is a little different from the most typical days."]);
+    } else if (score > -0.05) {
+        paragraphs.push(["Slightly unusual. ", "Your day sits just outside the usual pattern. That isn't necessarily a problem, just different from most days the model has seen."]);
+    } else {
+        paragraphs.push(["Very unusual. ", "Your numbers differ a lot from the days the model learned from, for example a very high or very low value in one or more areas."]);
+    }
+
+    paragraphs.push(["What the score means. ", `Above 0 is normal and below 0 is unusual. The further from 0, the stronger the result. Yours is ${score}.`]);
+    paragraphs.push(["What it doesn't mean. ", "This isn't a health score. It only compares today with typical days in the training data, so it can't say whether a day is good or bad for you."]);
+
+    const filled = (result.filled_with_median || []).map((f) => featureNames[f] || f);
+    if (filled.length) {
+        paragraphs.push(["Missing data. ", `The dashboard doesn't track ${filled.join(", ")}, so a typical value was used instead.`]);
+    }
+
+    checkExplain.replaceChildren(...paragraphs.map(([title, body]) => {
+        const p = document.createElement("p");
+        const strong = document.createElement("strong");
+        strong.textContent = title;
+        p.append(strong, body);
+        return p;
+    }));
+}
+
 async function checkDay() {
     checkResult.className = "check-result";
     checkResult.textContent = "Checking...";
+    checkExplain.replaceChildren();
     try {
         const res = await fetch(API_URL, {
             method: "POST",
@@ -171,9 +214,8 @@ async function checkDay() {
         const result = await res.json();
         const isNormal = result.verdict === "Normal";
         checkResult.className = `check-result ${isNormal ? "is-normal" : "is-unusual"}`;
-        checkResult.textContent = isNormal
-            ? `Today looks normal (score ${result.score})`
-            : `Today looks unusual (score ${result.score})`;
+        checkResult.textContent = `Today looks ${isNormal ? "normal" : "unusual"} (score ${result.score})`;
+        explainResult(result);
     } catch (err) {
         checkResult.className = "check-result is-error";
         checkResult.textContent = "Couldn't reach the model. Is the API running and the tunnel open?";
