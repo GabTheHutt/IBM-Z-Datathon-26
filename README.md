@@ -30,3 +30,5 @@ Applied secure AI data handling and analysis to identify risky situation, which 
 We have used the Linux One server to host our web-application, Isolation Forest to train our AI model with our dataset, and we are running our AI model using the IBM mainframe.
 
 ## Video Explation:
+
+https://livemanchesterac-my.sharepoint.com/:v:/r/personal/artur_brozek_student_manchester_ac_uk/Documents/Documents/Lamb%20Curry_IBM%20Z%20Datathon%202026%20Project.mp4?d=w1de837bc42be42c6ba32208038619e93&csf=1&web=1&e=iwt5fQ
